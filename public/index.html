@@ -26,7 +26,7 @@
 	<tbody>
 		<% _.each(doing, function(doing) { %>
 			<tr>
-				<td><%= doing.get('title') %></td>
+				<td><%= htmlEncode(doing.get('title')) %></td>
 			</tr>
 		<% }); %>
 	</tbody>

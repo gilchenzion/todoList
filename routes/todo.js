@@ -2,15 +2,15 @@ var mongo = require('mongodb');
 
 var Server = mongo.Server,
 	Db = mongo.Db,
-	BSON = mongo.pure().BSON;
+	BSON = mongo.BSONPure;
 
-var server = new Server('localhost', 27017, {auto_reconnect: true}, {safe: true});
-db = new Db('tododb', server);
+var server = new Server('localhost', 27017, {auto_reconnect: true});
+db = new Db('tododb', server, {safe: true});
 
 db.open(function(err, db) {
 	if(!err){
 		console.log("Connected to 'tododb' database");
-		db.collection('todo', {strict: true}, function(err, collection) {
+		db.collection('todo', {safe: true}, function(err, collection) {
 			if(err) {
 				console.log("The 'todo' collection doesn't exist");
 				populateDB();
@@ -25,7 +25,7 @@ exports.findAll = function(req, res) {
 			res.send(items);
 		});
 	});
-}
+};
 
 exports.findById = function(req, res) {
 	var id = req.params.id;
@@ -35,7 +35,7 @@ exports.findById = function(req, res) {
 			res.send(item);
 		});
 	});
-}
+};
 
 exports.addToDo = function(req, res) {
 	var todo = req.body;
@@ -50,7 +50,7 @@ exports.addToDo = function(req, res) {
 			}
 		});
 	});
-}
+};
 
 exports.updateToDo = function(req, res) {
 	var id = req.params.id;
@@ -68,7 +68,7 @@ exports.updateToDo = function(req, res) {
 			}
 		});
 	});
-}
+};
 
 exports.deleteToDo = function(req,res) {
 	var id = req.params.id;
@@ -83,7 +83,7 @@ exports.deleteToDo = function(req,res) {
 			}
 		})
 	})
-}
+};
 
 var populateDB = function() {
  

@@ -1,3 +1,14 @@
+function htmlEncode(value){
+  return $('<div/>').text(value).html();
+}
+
+function htmlDecode(value){
+  return $('<div/>').html(value).text();
+}
+
+
+
+
 $.fn.serializeObject = function() {
   var o = {};
   var a = this.serializeArray();

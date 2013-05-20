@@ -3,6 +3,10 @@ var express = require('express'),
 
 var app = express();
 
+app.configure(function() {
+	app.use(express.bodyParser());
+});
+
 app.get('/todo', todo.findAll);
 app.get('/todo/:id', todo.findById);
 app.post('/todo', todo.addToDo);
