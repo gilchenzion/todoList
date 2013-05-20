@@ -4,7 +4,7 @@ var Server = mongo.Server,
 	Db = mongo.Db,
 	BSON = mongo.pure().BSON;
 
-var server = new Server('localhost', 27017, {auto_reconnect: true});
+var server = new Server('localhost', 27017, {auto_reconnect: true}, {safe: true});
 db = new Db('tododb', server);
 
 db.open(function(err, db) {
@@ -90,7 +90,7 @@ var populateDB = function() {
     var todo = [
     {
         title: "Work work work",
-        description: "Got to get to work"
+        status: "ready"
     }];
  
     db.collection('todo', function(err, collection) {
