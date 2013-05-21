@@ -26,7 +26,7 @@
 	<tbody>
 		<% _.each(doing, function(doing) { %>
 			<tr>
-				<td><%= htmlEncode(doing.get('title')) %></td>
+				<td><a href="#/edit/<%= htmlEncode(doing.get('_id')) %>"><%= htmlEncode(doing.get('title')) %></a></td>
 			</tr>
 		<% }); %>
 	</tbody>
@@ -34,12 +34,15 @@
 	</script>
 
 	<script type="text/template" id="edit-todo-temp">
-		<form class="edit-todo-form">
-			<label>Add Todo</label>
-			<input type="text" name="firstname" />
-			<input type="hidden" name="status" value="ready" />
+		<form class="edit-todo-form" method="POST">
+			<label><%= item ? 'Update' : 'Add' %> Todo</label>
+			<input type="text" name="title" value="<%= item ? item.get('title') : '' %>"/>
+			<input type="hidden" name="status" value="<%= item ? item.get('status') : '' %>" />
+			<% if(item) { %>
+				<input type="hidden" name="id" value="<%= item.id %>" />
+			<% } %> 
 			<br />
-			<button type="submit" class="btn">Add</button>
+			<button type="submit" class="btn"><%= item ? 'Update' : 'Add' %></button>
 		</form>
 
 	</script>

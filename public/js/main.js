@@ -25,6 +25,16 @@ $.fn.serializeObject = function() {
   return o;
 };
 
+var Router = Backbone.Router.extend({
+	routes: {
+		'' : 'home',
+		'new': 'editToDo',
+		'edit/:id': 'editToDo'
+	}
+});
+
+var router = new Router();
+
 
 
 var Todos = Backbone.Collection.extend({
@@ -52,9 +62,21 @@ var TodoList = Backbone.View.extend({
 
 var EditToDo = Backbone.View.extend({
 	el: '#page',
-	render: function() {
-		var template = _.template($('#edit-todo-temp').html(), {});
-		this.$el.html(template);
+	render: function(options) {
+		var that = this;
+		if(options.id) {
+			var item = new Item({ id: options.id});
+			item.fetch({
+				success: function(item) {
+					var template = _.template($('#edit-todo-temp').html(), {item: item});
+					that.$el.html(template);
+				}
+			})
+		} else {
+			var template = _.template($('#edit-todo-temp').html(), {item : null});
+			this.$el.html(template);
+		}
+		
 	},
 	events: {
 		'submit .edit-todo-form': 'saveUser'
@@ -64,7 +86,7 @@ var EditToDo = Backbone.View.extend({
 		var item = new Item();
 		item.save(todoDetails, {
 			success: function(item) {
-				console.log(item);
+				router.navigate('', {trigger: true});
 			}
 		})
 		
@@ -72,22 +94,15 @@ var EditToDo = Backbone.View.extend({
 	}
 });
 
-var Router = Backbone.Router.extend({
-	routes: {
-		'' : 'home',
-		'new': 'editToDo'
-	}
-});
 
-var router = new Router();
 var todo = new TodoList();
 var editToDo = new EditToDo();
 
 router.on('route:home', function(){
 	todo.render();
 });
-router.on('route:editToDo', function() {
-	editToDo.render();
+router.on('route:editToDo', function(id) {
+	editToDo.render({id : id});
 })
 
 Backbone.history.start();
