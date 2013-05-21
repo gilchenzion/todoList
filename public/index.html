@@ -38,11 +38,13 @@
 			<label><%= item ? 'Update' : 'Add' %> Todo</label>
 			<input type="text" name="title" value="<%= item ? item.get('title') : '' %>"/>
 			<input type="hidden" name="status" value="<%= item ? item.get('status') : '' %>" />
-			<% if(item) { %>
-				<input type="hidden" name="id" value="<%= item.id %>" />
-			<% } %> 
+			
 			<br />
 			<button type="submit" class="btn"><%= item ? 'Update' : 'Add' %></button>
+			<% if(item) { %>
+				<input type="hidden" name="id" value="<%= item.id %>" />
+				<button type="button" class="btn btn-danger delete">Delete</button>
+			<% } %> 
 		</form>
 
 	</script>

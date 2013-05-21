@@ -65,8 +65,8 @@ var EditToDo = Backbone.View.extend({
 	render: function(options) {
 		var that = this;
 		if(options.id) {
-			var item = new Item({ id: options.id});
-			item.fetch({
+			that.item = new Item({ id: options.id});
+			that.item.fetch({
 				success: function(item) {
 					var template = _.template($('#edit-todo-temp').html(), {item: item});
 					that.$el.html(template);
@@ -79,7 +79,8 @@ var EditToDo = Backbone.View.extend({
 		
 	},
 	events: {
-		'submit .edit-todo-form': 'saveUser'
+		'submit .edit-todo-form': 'saveUser',
+		'click .delete': 'deleteUser'
 	},
 	saveUser: function(ev) {
 		var todoDetails = $(ev.currentTarget).serializeObject();
@@ -90,6 +91,14 @@ var EditToDo = Backbone.View.extend({
 			}
 		})
 		
+		return false;
+	},
+	deleteUser: function(ev) {
+		this.item.destroy({
+			success: function() {
+				router.navigate('', {trigger: true});
+			}
+		});
 		return false;
 	}
 });
