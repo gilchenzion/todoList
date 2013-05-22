@@ -69,7 +69,15 @@ var ItemView = Backbone.View.extend({
 		});
 	},
 	update: function(ev) {
-		console.log("update");
+		var that = this;
+		if(this.model.get('status') == "ready") {
+			this.model.save({'status' : "doing"}, {
+				success: function() {
+
+					$(that.el).remove();
+				}
+			});
+		}
 	}
 });
 
@@ -88,9 +96,10 @@ var TodoList = Backbone.View.extend({
 		
 		$(this.el).append(itemView.el);
 	},
-	render: function() {
+	render: function(options) {
 		var that = this;
 		that.todos = new Todos();
+		that.todos.url += "?status=" + options.status;
 		that.todos.fetch({
 			success: function() {
 				that.todos.each(function(model){ 
@@ -108,6 +117,7 @@ var EditToDo = Backbone.View.extend({
 		var that = this;
 		if(options.id) {
 			that.item = new Item({ id: options.id});
+
 			that.item.fetch({
 				success: function(item) {
 					var template = _.template($('#edit-todo-temp').html(), {item: item});
@@ -146,13 +156,18 @@ var EditToDo = Backbone.View.extend({
 });
 
 
-var todoList = new TodoList();
-
+var ready = new TodoList();
+var doing = new TodoList();
+var done = new TodoList();
 var editToDo = new EditToDo();
 
 router.on('route:home', function(){
-	todoList.render();
-	$("#ready").html(todoList.el);
+	ready.render({status: "ready"});
+	$("#ready").html(ready.el);
+	doing.render({status: "doing"});
+	$("#doing").html(doing.el);
+	done.render({status: "done"});
+	$("#done").html(done.el);
 });
 
 router.on('route:editToDo', function(id) {

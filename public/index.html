@@ -19,13 +19,17 @@
 				</div>
 			</li>
 			<li class="span4" >
-				<div class="thumbnail list" id="doing">
+				<div class="thumbnail list" >
 					<h3>Doing</h3>
+					<table class="table striped" id="doing">
+					</table>
 				</div>
 			</li>
 			<li class="span4" >
-				<div class="thumbnail list" id="done">
+				<div class="thumbnail list" >
 					<h3>Done</h3>
+					<table class="table striped" id="done">
+					</table>
 				</div>
 			</li>
 		</ul>
@@ -37,8 +41,13 @@
 				<%= item.get('title') %>
 			</td>
 			<td>
+				<% if(item.get('status') != "ready") { %>
+				<a class="previous"><i class="icon-chevron-left"></i></a>
+				<% } %>
 				<a class="remove"><i class="icon-remove"></i></a>
+				<% if(item.get('status') != "done") { %>
 				<a class="update"><i class="icon-chevron-right"></i></a>
+				<% } %>
 			</td>
 	</script>
 
@@ -47,7 +56,7 @@
 		<form class="edit-todo-form" method="POST">
 			<label><%= item ? 'Update' : 'Add' %> Todo</label>
 			<input type="text" name="title" value="<%= item ? item.get('title') : '' %>"/>
-			<input type="hidden" name="status" value="<%= item ? item.get('status') : '' %>" />
+			<input type="hidden" name="status" value="<%= item ? item.get('status') : 'ready' %>" />
 			
 			<br />
 			<button type="submit" class="btn"><%= item ? 'Update' : 'Add' %></button>

@@ -21,7 +21,7 @@ db.open(function(err, db) {
 
 exports.findAll = function(req, res) {
 	db.collection('todo', function(err, collection) {
-		collection.find().toArray(function(err, items){
+		collection.find(req.query).toArray(function(err, items){
 			res.send(items);
 		});
 	});
@@ -55,6 +55,7 @@ exports.addToDo = function(req, res) {
 exports.updateToDo = function(req, res) {
 	var id = req.params.id;
 	var todo = req.body;
+	todo._id = new BSON.ObjectID(id);
 	console.log('Updating todo: ' + id);
 	console.log(JSON.stringify(todo));
 	db.collection('todo', function(err, collection) {
