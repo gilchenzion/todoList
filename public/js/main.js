@@ -33,6 +33,7 @@ var router = new Router();
 
 var Item = Backbone.Model.extend({
 	urlRoot: 'http://localhost:3000/todo',
+	idAttribute: "_id",
 	defaults: {
 		title: '',
 		status: 'ready'
@@ -46,10 +47,29 @@ var Todos = Backbone.Collection.extend({
 
 var ItemView = Backbone.View.extend({
 	tagName: 'tr',
+	initialize: function() {
+		_.bindAll(this, 'render', 'update', 'delete');
+	},
+	events: {
+		"click a.remove": "delete",
+		"click a.update": "update"
+	},
 	render: function() {
 		var template = _.template($('#todos-item-template').html(), { item : this.model});
 		$(this.el).append(template);
 		return this;
+	},
+	delete: function(ev) {
+		var that = this;
+		this.model.destroy({
+			success: function() {
+				$(that.el).remove();
+				console.log("YES");
+			}
+		});
+	},
+	update: function(ev) {
+		console.log("update");
 	}
 });
 
@@ -81,7 +101,7 @@ var TodoList = Backbone.View.extend({
 	}
 });
 
-/*
+
 var EditToDo = Backbone.View.extend({
 	el: '#page',
 	render: function(options) {
@@ -124,20 +144,20 @@ var EditToDo = Backbone.View.extend({
 		return false;
 	}
 });
-*/
+
 
 var todoList = new TodoList();
 
-//var editToDo = new EditToDo();
+var editToDo = new EditToDo();
 
 router.on('route:home', function(){
 	todoList.render();
 	$("#ready").html(todoList.el);
 });
-/*
+
 router.on('route:editToDo', function(id) {
 	editToDo.render({id : id});
 })
-*/
+
 
 Backbone.history.start();
