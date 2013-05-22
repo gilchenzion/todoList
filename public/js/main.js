@@ -5,10 +5,6 @@ function htmlEncode(value){
 function htmlDecode(value){
   return $('<div/>').html(value).text();
 }
-
-
-
-
 $.fn.serializeObject = function() {
   var o = {};
   var a = this.serializeArray();
@@ -35,31 +31,57 @@ var Router = Backbone.Router.extend({
 
 var router = new Router();
 
-
+var Item = Backbone.Model.extend({
+	urlRoot: 'http://localhost:3000/todo',
+	defaults: {
+		title: '',
+		status: 'ready'
+	}
+});
 
 var Todos = Backbone.Collection.extend({
-	url: 'http://localhost:3000/todo'
+	url: 'http://localhost:3000/todo',
+	model: Item
 });
 
-var Item = Backbone.Model.extend({
-	urlRoot: 'http://localhost:3000/todo'
+var ItemView = Backbone.View.extend({
+	tagName: 'tr',
+	render: function() {
+		var template = _.template($('#todos-item-template').html(), { item : this.model});
+		$(this.el).append(template);
+		return this;
+	}
 });
+
 
 
 var TodoList = Backbone.View.extend({
-	el: '#page',
+	tagName: 'tbody',
+    initialize: function(){
+        _.bindAll(this, "renderItem");
+    },
+	renderItem: function(model) {
+		
+		var itemView = new ItemView({model: model});
+
+		itemView.render();
+		
+		$(this.el).append(itemView.el);
+	},
 	render: function() {
 		var that = this;
-		var doing = new Todos();
-		doing.fetch({
+		that.todos = new Todos();
+		that.todos.fetch({
 			success: function() {
-				var template = _.template($('#todos-template').html(), {doing: doing.models});
-				that.$el.html(template);
+				that.todos.each(function(model){ 
+					that.renderItem(model); 
+				});
 			}
 		});
 	}
 });
 
+/*
 var EditToDo = Backbone.View.extend({
 	el: '#page',
 	render: function(options) {
@@ -102,16 +124,20 @@ var EditToDo = Backbone.View.extend({
 		return false;
 	}
 });
+*/
 
+var todoList = new TodoList();
 
-var todo = new TodoList();
-var editToDo = new EditToDo();
+//var editToDo = new EditToDo();
 
 router.on('route:home', function(){
-	todo.render();
+	todoList.render();
+	$("#ready").html(todoList.el);
 });
+/*
 router.on('route:editToDo', function(id) {
 	editToDo.render({id : id});
 })
+*/
 
 Backbone.history.start();

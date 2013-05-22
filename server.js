@@ -14,6 +14,7 @@ app.all('*', function(req, res, next){
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
+//on OPTIONS, handle 404 error
 app.options('*',function(req,res) {
 	res.send(200);
 });
