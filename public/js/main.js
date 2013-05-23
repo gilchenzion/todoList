@@ -52,7 +52,8 @@ var ItemView = Backbone.View.extend({
 	},
 	events: {
 		"click a.remove": "delete",
-		"click a.update": "update"
+		"click a.update": "update",
+		"click a.previous": "back"
 	},
 	render: function() {
 		var template = _.template($('#todos-item-template').html(), { item : this.model});
@@ -73,8 +74,29 @@ var ItemView = Backbone.View.extend({
 		if(this.model.get('status') == "ready") {
 			this.model.save({'status' : "doing"}, {
 				success: function() {
-
-					$(that.el).remove();
+					$(document).trigger('domChanged');
+				}
+			});
+		} else {
+			this.model.save({'status' : "done"}, {
+				success: function() {
+					$(document).trigger('domChanged');
+				}
+			});
+		}
+	},
+	back: function(ev) {
+		var that = this;
+		if(this.model.get('status') == "doing") {
+			this.model.save({'status' : "ready"}, {
+				success: function() {
+					$(document).trigger('domChanged');
+				}
+			});
+		} else {
+			this.model.save({'status' : "doing"}, {
+				success: function() {
+					$(document).trigger('domChanged');
 				}
 			});
 		}
@@ -113,66 +135,67 @@ var TodoList = Backbone.View.extend({
 
 var EditToDo = Backbone.View.extend({
 	el: '#page',
-	render: function(options) {
-		var that = this;
-		if(options.id) {
-			that.item = new Item({ id: options.id});
-
-			that.item.fetch({
+	render: function() {
+			var that = this;
+			this.item = new Item();
+			this.item.fetch({
 				success: function(item) {
-					var template = _.template($('#edit-todo-temp').html(), {item: item});
+					var template = _.template($('#edit-todo-temp').html(), {});
 					that.$el.html(template);
 				}
-			})
-		} else {
-			var template = _.template($('#edit-todo-temp').html(), {item : null});
-			this.$el.html(template);
-		}
+			});
 		
 	},
 	events: {
-		'submit .edit-todo-form': 'saveUser',
-		'click .delete': 'deleteUser'
+		'submit .edit-todo-form': 'saveUser'
 	},
 	saveUser: function(ev) {
 		var todoDetails = $(ev.currentTarget).serializeObject();
 		var item = new Item();
 		item.save(todoDetails, {
 			success: function(item) {
-				router.navigate('', {trigger: true});
+				$(ev.currentTarget).context[0].value = '';
+				$(document).trigger('domChanged');
 			}
 		})
 		
-		return false;
-	},
-	deleteUser: function(ev) {
-		this.item.destroy({
-			success: function() {
-				router.navigate('', {trigger: true});
-			}
-		});
 		return false;
 	}
 });
 
 
-var ready = new TodoList();
-var doing = new TodoList();
-var done = new TodoList();
-var editToDo = new EditToDo();
 
-router.on('route:home', function(){
+
+
+function load() {
+	
+	var ready = new TodoList();
+	var doing = new TodoList();
+	var done = new TodoList();
 	ready.render({status: "ready"});
 	$("#ready").html(ready.el);
 	doing.render({status: "doing"});
 	$("#doing").html(doing.el);
 	done.render({status: "done"});
 	$("#done").html(done.el);
+	
+}
+
+router.on('route:home', function(){
+	var editToDo = new EditToDo();
+	editToDo.render();
+	load();
+});
+
+$(document).bind('domChanged', function(){
+	load();
 });
 
 router.on('route:editToDo', function(id) {
 	editToDo.render({id : id});
-})
+});
+
+
 
 
 Backbone.history.start();

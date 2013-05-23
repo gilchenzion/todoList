@@ -7,7 +7,6 @@
 <body>
 	<div class="container">
 		<h1>Ready, Doing, Done</h1>
-		<p><a href="#/new" class="btn btn-primary">Add ToDo</a></p>
 		<div id="page"></div>
 		<ul class="thumbnails">
 			<li class="span4" >
@@ -53,17 +52,10 @@
 
 
 	<script type="text/template" id="edit-todo-temp">
-		<form class="edit-todo-form" method="POST">
-			<label><%= item ? 'Update' : 'Add' %> Todo</label>
-			<input type="text" name="title" value="<%= item ? item.get('title') : '' %>"/>
-			<input type="hidden" name="status" value="<%= item ? item.get('status') : 'ready' %>" />
-			
-			<br />
-			<button type="submit" class="btn"><%= item ? 'Update' : 'Add' %></button>
-			<% if(item) { %>
-				<input type="hidden" name="id" value="<%= item.id %>" />
-				<button type="button" class="btn btn-danger delete">Delete</button>
-			<% } %> 
+		<form class="edit-todo-form form-inline">
+			<input type="text" name="title" />
+			<input type="hidden" name="status" value="ready" />
+			<button type="submit" class="btn btn-primary">Add Task</button>
 		</form>
 
 	</script>
